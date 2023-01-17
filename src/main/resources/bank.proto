@@ -1,0 +1,99 @@
+syntax = "proto3";
+option java_package = "me.mrsofiane.grpcserver.grpc.stub";
+
+
+service BankService {
+  rpc getBankAccount(GetBankAccountRequest) returns (GetBankAccountResponse);
+  rpc getListAccounts(GetListAccountsRequest) returns (GetListAccountsResponse);
+  rpc convertCurrency(ConvertCurrencyRequest) returns (ConvertCurrencyResponse);
+  // Server streaming
+  rpc getStreamOfTransactions(GetStreamOfTransactionsRequest) returns (stream Transaction);
+  // Client streaming
+  rpc performStreamOfTransactions(stream Transaction) returns (PerformStreamOfTransactionsResponse);
+  // Bidirectional streaming
+  rpc executeStreamOfTransactions(stream Transaction) returns (stream Transaction);
+}
+
+
+enum AccountType {
+  CURRENT_ACCOUNT=0;
+  SAVING_ACCOUNT=1;
+}
+
+enum AccountState {
+  CREATED=0;
+  ACTIVATED=1;
+  SUSPENDED=2;
+  BLOCKED=3;
+}
+
+message BankAccount {
+  string accountId=1;
+  double balance=2;
+  int64 createdAt=3;
+  AccountType type=4;
+  AccountState state=5;
+}
+
+message GetBankAccountRequest {
+  string accountId=1;
+}
+
+message GetBankAccountResponse {
+  BankAccount bankAccount=1;
+}
+
+message GetListAccountsRequest {}
+
+message GetListAccountsResponse {
+  repeated BankAccount bankAccount=1;
+}
+
+message ConvertCurrencyRequest {
+  string currencyFrom=1;
+  string currencyTo=2;
+  double amount=3;
+
+}
+
+message ConvertCurrencyResponse {
+  string currencyFrom=1;
+  string currencyTo=2;
+  double amount=3;
+  double conversionResult=4;
+}
+
+
+message Transaction {
+  int64 id=1;
+  string accountId=2;
+  int64 timestamp=3;
+  double amount=4;
+  TransactionType type=5;
+  TransactionStatus status=6;
+}
+
+enum TransactionType {
+  CREDIT=0;
+  DEBIT=1;
+}
+
+enum TransactionStatus {
+  PENDING=0;
+  EXECUTED=1;
+  REJECTED=3;
+}
+
+message GetStreamOfTransactionsRequest {
+  string accountId=1;
+}
+
+message PerformStreamOfTransactionsResponse {
+  double totalTransactionsAmount=1;
+  double totalCreditTransactionsAmount=2;
+  double totalDebitTransactionsAmount=3;
+  int32 executedTransactionsCount=4;
+
+}
+
+
